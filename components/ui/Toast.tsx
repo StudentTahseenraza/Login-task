@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   FiCheckCircle, 
   FiAlertCircle, 
@@ -61,11 +61,17 @@ export const Toast: React.FC<ToastProps> = ({
     return () => clearTimeout(timer);
   }, [id, duration, onClose]);
 
+  const progressVariants = {
+    initial: { width: '100%' },
+    animate: { width: '0%' }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.3 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, scale: 0.5 }}
+      transition={{ duration: 0.3 }}
       className={`
         relative flex items-center gap-3 px-4 py-3 rounded-xl
         ${toastColors[type].bg} text-white
@@ -76,8 +82,9 @@ export const Toast: React.FC<ToastProps> = ({
     >
       {/* Progress Bar */}
       <motion.div
-        initial={{ width: '100%' }}
-        animate={{ width: '0%' }}
+        variants={progressVariants}
+        initial="initial"
+        animate="animate"
         transition={{ duration: duration / 1000, ease: 'linear' }}
         className="absolute bottom-0 left-0 h-1 bg-white/30 rounded-b-xl"
       />

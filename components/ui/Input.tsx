@@ -1,9 +1,9 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends HTMLMotionProps<'input'> {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
@@ -18,15 +18,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
+
         <div className="relative">
           {icon && (
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50">
               {icon}
             </div>
           )}
+
           <motion.input
-            whileFocus={{ scale: 1.01 }}
             ref={ref}
+            whileFocus={{ scale: 1.01 }}
             className={`
               w-full px-4 py-3 ${icon ? 'pl-10' : 'pl-4'} 
               bg-white/10 border border-white/20 rounded-xl
@@ -39,6 +41,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
         </div>
+
         {error && (
           <motion.p
             initial={{ opacity: 0, y: -10 }}
