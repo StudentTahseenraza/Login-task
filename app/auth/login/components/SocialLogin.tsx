@@ -3,16 +3,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook } from 'react-icons/fa';
+import { FaFacebook, FaGithub, FaTwitter } from 'react-icons/fa';
+import { useToast } from '@/context/ToastContext';
 
 const SocialLogin = () => {
+  const toast = useToast();
+
   const socialButtons = [
     {
       name: 'Google',
       icon: FcGoogle,
       bgColor: 'bg-white/10',
       hoverColor: 'hover:bg-white/20',
-      onClick: () => console.log('Google login')
+      onClick: () => toast.info('Google login coming soon!')
     },
     {
       name: 'Facebook',
@@ -20,7 +23,22 @@ const SocialLogin = () => {
       bgColor: 'bg-[#1877F2]/20',
       hoverColor: 'hover:bg-[#1877F2]/30',
       iconColor: 'text-[#1877F2]',
-      onClick: () => console.log('Facebook login')
+      onClick: () => toast.info('Facebook login coming soon!')
+    },
+    {
+      name: 'GitHub',
+      icon: FaGithub,
+      bgColor: 'bg-white/10',
+      hoverColor: 'hover:bg-white/20',
+      onClick: () => toast.info('GitHub login coming soon!')
+    },
+    {
+      name: 'Twitter',
+      icon: FaTwitter,
+      bgColor: 'bg-[#1DA1F2]/20',
+      hoverColor: 'hover:bg-[#1DA1F2]/30',
+      iconColor: 'text-[#1DA1F2]',
+      onClick: () => toast.info('Twitter login coming soon!')
     }
   ];
 
@@ -47,7 +65,7 @@ const SocialLogin = () => {
             `}
           >
             <Icon className={`w-5 h-5 ${button.iconColor || ''}`} />
-            <span>{button.name}</span>
+            <span className="text-sm">{button.name}</span>
           </motion.button>
         );
       })}
