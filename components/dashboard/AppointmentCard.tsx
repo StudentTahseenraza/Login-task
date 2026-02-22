@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { FiClock, FiCreditCard, FiCalendar } from 'react-icons/fi';
-
+import { cn } from '@/lib/utils';
 interface AppointmentCardProps {
   doctorName: string;
   specialty: string;
