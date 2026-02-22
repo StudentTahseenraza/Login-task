@@ -1,39 +1,49 @@
 'use client';
 
 import React from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { Toast, ToastType } from './Toast';
+import { motion } from 'framer-motion';
+import { FiCheckCircle, FiXCircle, FiAlertCircle, FiInfo } from 'react-icons/fi';
 
-export interface ToastMessage {
-  id: string;
-  type: ToastType;
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+
+interface ToastProps {
   message: string;
-  duration?: number;
+  type: ToastType;
+  onClose: () => void;
 }
 
-interface ToastContainerProps {
-  toasts: ToastMessage[];
-  onRemove: (id: string) => void;
-}
+const toastStyles: Record<ToastType, string> = {
+  success: 'bg-green-600',
+  error: 'bg-red-600',
+  warning: 'bg-yellow-600',
+  info: 'bg-blue-600',
+};
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({
-  toasts,
-  onRemove
+const toastIcons: Record<ToastType, React.ReactNode> = {
+  success: <FiCheckCircle />,
+  error: <FiXCircle />,
+  warning: <FiAlertCircle />,
+  info: <FiInfo />,
+};
+
+export const Toast: React.FC<ToastProps> = ({
+  message,
+  type,
+  onClose,
 }) => {
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-3">
-      <AnimatePresence mode="popLayout">
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            id={toast.id}
-            type={toast.type}
-            message={toast.message}
-            duration={toast.duration}
-            onClose={onRemove}
-          />
-        ))}
-      </AnimatePresence>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      transition={{ duration: 0.2 }}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white shadow-lg ${toastStyles[type]}`}
+    >
+      <div className="text-lg">{toastIcons[type]}</div>
+      <p className="flex-1 text-sm font-medium">{message}</p>
+      <button onClick={onClose} className="text-white/80 hover:text-white">
+        ✕
+      </button>
+    </motion.div>
   );
 };

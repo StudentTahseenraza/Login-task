@@ -3,12 +3,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string; // Make phone optional
   role: 'patient' | 'doctor';
   avatar?: string;
+  createdAt?: string;
 }
 
 interface AuthContextType {
@@ -38,7 +40,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for stored user on mount
     const storedUser = localStorage.getItem('schedula_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('schedula_user');
+      }
     }
     setIsLoading(false);
   }, []);
@@ -73,7 +80,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const newUser = {
         id: Date.now().toString(),
-        ...userData,
+        name: userData.name || '',
+        email: userData.email,
+        phone: userData.phone || '',
+        role: userData.role || 'patient',
+        password: userData.password,
         createdAt: new Date().toISOString()
       };
 

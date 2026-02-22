@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import DoctorCard from '@/components/dashboard/DoctorCard';
 import CalendarView from '@/components/dashboard/CalendarView';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import { useToast } from '@/context/ToastContext';
 
 const mockDoctors = [
   {
@@ -50,14 +51,27 @@ const mockDoctors = [
 export default function DoctorsPage() {
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCalendar, setShowCalendar] = useState(false);
+  const toast = useToast();
 
   const filteredDoctors = mockDoctors.filter(doctor =>
     doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleBookAppointment = (doctor: any) => {
+    setSelectedDoctor(doctor);
+    setShowCalendar(true);
+  };
+
+  const handleDateSelected = (date: Date, time: string) => {
+    toast.showToast('success', `Appointment booked with ${selectedDoctor?.name} on ${format(date, 'MMM d')} at ${time}`);
+    setShowCalendar(false);
+    setSelectedDoctor(null);
+  };
+
   return (
-    <div>
+    <div className="pb-20">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -73,7 +87,7 @@ export default function DoctorsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-6"
+        className="mb-6 sticky top-0 z-10 bg-gradient-to-b from-[#0a0a1a] to-transparent pt-2 pb-4"
       >
         <div className="flex gap-2">
           <div className="flex-1">
@@ -98,7 +112,6 @@ export default function DoctorsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            onClick={() => setSelectedDoctor(doctor)}
           >
             <DoctorCard
               name={doctor.name}
@@ -107,32 +120,36 @@ export default function DoctorsPage() {
               location={doctor.location}
               rating={doctor.rating}
               available={doctor.available}
-              onBook={() => setSelectedDoctor(doctor)}
+              onBook={() => handleBookAppointment(doctor)}
             />
           </motion.div>
         ))}
       </div>
 
       {/* Calendar Modal */}
-      {selectedDoctor && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={() => setSelectedDoctor(null)}
-        >
-          <motion.div
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            className="w-full max-w-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CalendarView onSelectDate={(date) => console.log(date)} />
-          </motion.div>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {showCalendar && selectedDoctor && (
+          <CalendarView
+            doctorName={selectedDoctor.name}
+            specialty={selectedDoctor.specialty}
+            qualification={selectedDoctor.qualification}
+            location={selectedDoctor.location}
+            onSelectDate={handleDateSelected}
+            onClose={() => {
+              setShowCalendar(false);
+              setSelectedDoctor(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
+}
+
+// Helper function for date formatting
+function format(date: Date, formatStr: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
 }
